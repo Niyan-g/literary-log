@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Likes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='startercss.css') }}">
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="/my-profile" style="color: #fff;">← Back to Profile</a>
+        <h1 style="color: #fff;">My Collection</h1>
+    </div>
+
+    <div class="Books" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        {% for book in books %}
+            <div class="book-card">
+                <img 
+                    src="{{ book.cover_url or book.cover }}" 
+                    alt="{{ book.title }}" 
+                    class="cover"
+                    onerror="this.onerror=null; this.src='https://placehold.co/200x300/2a2d34/ffffff?text=No+Cover';"
+                >
+                <h2>{{ book.title }}</h2> 
+                <p class="meta">{{ book.author }} • {{ book.year }}</p>
+                <p style="color: #ccc;">Status: {{ book.status }}</p>
+                
+                {% if book.review %}
+                    <p style="color: #aaa; font-style: italic;">"{{ book.review }}"</p>
+                {% endif %}
+
+                <!-- Rating Form Inside Book Loop -->
+<!-- Rating Form Inside Book Loop -->
+               <form action="/rate_book" method="POST" class="button-item" id="rating-form-{{ book.id or loop.index }}" style="margin: 10px 0;">
+                   <input type="hidden" name="rating" id="rating-value-{{ book.id or loop.index }}" value="{{ book.rating or 0 }}">
+                   <input type="hidden" name="title" value="{{ book.title }}">
+                   <input type="hidden" name="author" value="{{ book.author }}">
+                   <input type="hidden" name="year" value="{{ book.year }}">
+                   <input type="hidden" name="cover_url" value="{{ book.cover_url or book.cover }}">
+
+                   <div class="star-container">
+                       {% set current_rating = book.rating or 0 %}
+                       {% set cls_map = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five'} %}
+                       {% set active_cls = cls_map.get(current_rating, '') %}
+
+                       <span onclick="gfg(1, '{{ book.id or loop.index }}')" class="star {% if current_rating >= 1 %}{{ active_cls }}{% endif %}">★</span>
+                       <span onclick="gfg(2, '{{ book.id or loop.index }}')" class="star {% if current_rating >= 2 %}{{ active_cls }}{% endif %}">★</span>
+                       <span onclick="gfg(3, '{{ book.id or loop.index }}')" class="star {% if current_rating >= 3 %}{{ active_cls }}{% endif %}">★</span>
+                       <span onclick="gfg(4, '{{ book.id or loop.index }}')" class="star {% if current_rating >= 4 %}{{ active_cls }}{% endif %}">★</span>
+                       <span onclick="gfg(5, '{{ book.id or loop.index }}')" class="star {% if current_rating >= 5 %}{{ active_cls }}{% endif %}">★</span>
+                   </div>
+               </form>
+
+                {% if book.id is defined and book.id %}
+                    <form action="{{ url_for('remove_book', book_id=book.id) }}" method="POST" style="margin-top: 10px;">
+                        <button type="submit" class="delete-btn" onclick="return confirm('Remove this book from your list?');" style="background: transparent; border: none; cursor: pointer; color: #ff4d4d; font-size: 14px;">
+                            🗑️ Delete
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <p style="color: #fff;">No books saved yet!</p>
+        {% endfor %}
+    </div>
+
+    <script>
+    function gfg(n, cardIndex) {
+        const form = document.getElementById(`rating-form-${cardIndex}`);
+        const stars = form.getElementsByClassName("star");
+        const ratingInput = document.getElementById(`rating-value-${cardIndex}`);
+
+        remove(stars);
+
+        let cls = "";
+        if (n == 1) cls = "one";
+        else if (n == 2) cls = "two";
+        else if (n == 3) cls = "three";
+        else if (n == 4) cls = "four";
+        else if (n == 5) cls = "five";
+
+        for (let i = 0; i < n; i++) {
+            stars[i].className = "star " + cls;
+        }
+
+        ratingInput.value = n;
+        form.submit();
+    }
+
+    function remove(stars) {
+        for (let i = 0; i < stars.length; i++) {
+            stars[i].className = "star";
+        }
+    }
+    </script>
+</body>
+</html>

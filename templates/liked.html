@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Likes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='startercss.css') }}">
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="/my-profile" style="color: #fff;">← Back to Search</a>
+        <h1 style="color: #fff;">My Collection</h1>
+    </div>
+
+    <div class="Books" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        {% for book in books %}
+            <div class="book-card">
+                <img 
+                           src="{{ book.cover_url or book.cover }}" 
+                           alt="{{ book.title }}" 
+                           class="cover"
+                           onerror="this.onerror=null; this.src='https://placehold.co/200x300/2a2d34/ffffff?text=No+Cover';"
+                >
+                <h2>{{ book[1] }}</h2> 
+                <p class="meta">{{ book[2] }} • {{ book[3] }}</p>
+                {% if book.id is defined and book.id %}
+                    <form action="{{ url_for('remove_book', book_id=book.id) }}" method="POST" style="margin-top: 10px;">
+                       <button type="submit" class="delete-btn" onclick="return confirm('Remove this book from your list?');" style="background: transparent; border: none; cursor: pointer; color: #ff4d4d; font-size: 14px;">
+                          🗑️ Delete
+                       </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <p style="color: #fff;">No books saved yet!</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

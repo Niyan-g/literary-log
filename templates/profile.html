@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Likes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='startercss.css') }}">
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="/" style="color: #fff;">← Back to Search</a>
+        <h1 style="color: #fff;">My Collection</h1>
+    </div>
+
+     <div class="Books">
+        <!-- Navigation to Saved List -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="/my-list" style="color: #fff; text-decoration: underline;"> books </a>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="/my-likes" style="color: #fff; text-decoration: underline;"> likes </a>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="/my-readlist" style="color: #fff; text-decoration: underline;"> readlist </a>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="/my-review" style="color: #fff; text-decoration: underline;"> reviews </a>
+        </div>
+    </div>
+</body>
+</html>

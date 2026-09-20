@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reviews</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='startercss.css') }}">
+    <style>
+        /* Card Flip Container */
+        .flip-card { 
+            background-color: transparent; 
+            width: 200px; 
+            height: 320px; 
+            perspective: 1000px; 
+            cursor: pointer; 
+        }
+        .flip-card-inner { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            text-align: center; 
+            transition: transform 0.6s; 
+            transform-style: preserve-3d; 
+        }
+        .flip-card.flipped .flip-card-inner { 
+            transform: rotateY(180deg); 
+        }
+        .flip-card-front, .flip-card-back { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            -webkit-backface-visibility: hidden; 
+            backface-visibility: hidden; 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        
+        /* Front Side Styling */
+        .flip-card-front { 
+            background-color: #1e1e1e; 
+            color: white; 
+        }
+        .flip-card-front img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        /* Back Side Styling (Review Side) */
+        .flip-card-back { 
+            background-color: #2b2b2b; 
+            color: white; 
+            transform: rotateY(180deg); 
+            padding: 15px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="/my-profile" style="color: #fff;">← Back to Profile</a>
+        <h1 style="color: #fff;">My Book Reviews</h1>
+    </div>
+
+    <div class="Books" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        {% for book in books %}
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <!-- Front Side: Book Cover -->
+                    <div class="flip-card-front">
+                        <img 
+                           src="{{ book.cover_url or book.cover }}" 
+                           alt="{{ book.title }}" 
+                           class="cover"
+                           onerror="this.onerror=null; this.src='https://placehold.co/200x300/2a2d34/ffffff?text=No+Cover';"
+                        >
+                    </div>
+                    <!-- Back Side: Review Details -->
+                    <div class="flip-card-back">
+                        <h3 style="margin-top:0; font-size: 16px;">{{ book.title }}</h3>
+                        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">{{ book.author }}</p>
+                        <p style="font-size: 14px; font-style: italic; background: #1e1e1e; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box;">
+                            "{{ book.review }}"
+                        </p>
+                        <span style="font-size: 11px; color: #888; margin-top: 8px;">Click to flip back</span>
+                    </div>
+                </div>
+                {% if book.id is defined and book.id %}
+                    <form action="{{ url_for('remove_book', book_id=book.id) }}" method="POST" style="margin-top: 10px;">
+                       <button type="submit" class="delete-btn" onclick="return confirm('Remove this book from your list?');" style="background: transparent; border: none; cursor: pointer; color: #ff4d4d; font-size: 14px;">
+                          🗑️ Delete
+                       </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <p style="color: #fff;">No reviewed books yet!</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

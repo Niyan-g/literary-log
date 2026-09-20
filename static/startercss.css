@@ -1,0 +1,160 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f1115;
+    color: white;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+}
+
+.book-card {
+    width: 320px;
+    text-align: center;
+    background: #171a21;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.cover {
+    width: 100%;
+    height: 400px;            /* Fixes every book cover to the same height */
+    object-fit: contain;        /* Prevents image distortion by clipping overflow */
+    border-radius: 6px;
+    margin-bottom: 16px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+.meta {
+    color: #b8bec9;
+    margin-bottom: 20px;
+}
+
+/* --- ACTION BUTTON LAYOUT --- */
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 18px;
+}
+
+.button-item,
+.review-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: aliceblue;
+    font-family: sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Reset button styles to match plain icons */
+button,
+.icon-btn {
+    margin: 0 0 4px 0;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: white;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+button:hover,
+.icon-btn:hover {
+    background: #2f3644;
+}
+
+/* Details/Summary specific alignment */
+.review-wrapper {
+    position: relative;
+}
+
+.review-toggle {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: normal;
+}
+
+.review-toggle::-webkit-details-marker,
+.review-toggle::marker {
+    display: none;
+    content: "";
+}
+
+/* --- REVIEW POPOVER STYLES --- */
+
+.review-popover {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #242832;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+    width: 180px;
+}
+
+.review-popover input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #3b4252;
+    background: #171a21;
+    color: #fff;
+    box-sizing: border-box;
+    font-size: 13px;
+}
+
+.review-popover button[type="submit"] {
+    width: 100%;
+    height: auto;
+    padding: 6px;
+    font-size: 13px;
+    background: #007bff;
+    border-radius: 6px;
+    margin: 0;
+}
+
+.review-popover button[type="submit"]:hover {
+    background: #0056b3;
+}
+
+.star {
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* Color classes assigned by the script */
+.star.one, .star.two, .star.three, .star.four, .star.five {
+    color: #ffc107; /* Gold star color */
+}

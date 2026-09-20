@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='startercss.css') }}">
+    <style>
+        .review-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .review-toggle {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .review-toggle::-webkit-details-marker {
+            display: none;
+        }
+
+        .review-popover {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2b2b2b;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+            width: 180px;
+            margin-bottom: 8px;
+        }
+
+        .review-popover input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: #1e1e1e;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .review-popover button {
+            padding: 6px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Header -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="/my-profile" style="color: #fff; text-decoration: underline;"> profile </a>
+        </div>
+
+        <!-- Search Bar Form -->
+        <form action="/" method="GET" style="margin-bottom: 20px; text-align: center;">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search for a book..."
+                required
+                style="padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc;"
+            >
+            <button type="submit" style="padding: 8px 16px; font-size: 16px; cursor: pointer;">Search</button>
+        </form>
+
+        <!-- Books Grid / List -->
+        <div class="Books" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+           {% for book in books %}
+              <div class="book-card">
+                <img 
+                  src="{{ book.cover or book.cover_url }}" 
+                  data-fallback="{{ book.fallback_cover }}" 
+                  alt="{{ book.title }}" 
+                  class="cover"
+                  onerror="if (this.src !== this.getAttribute('data-fallback') && this.getAttribute('data-fallback')) { this.src = this.getAttribute('data-fallback'); } else { this.src = 'https://placehold.co/200x300/2a2d34/ffffff?text=No+Cover'; }"
+                >
+                <h1>{{ book.title }}</h1>
+                <p class="meta">{{ book.author }} • {{ book.year }}</p>
+
+                    <div class="actions">
+                        <!-- Save as Read Form -->
+                        <form action="/save_book" method="POST" class="button-item">
+                            <input type="hidden" name="title" value="{{ book.title }}">
+                            <input type="hidden" name="search_query" value="{{ request.args.get('q', '') }}">
+                            <input type="hidden" name="author" value="{{ book.author }}">
+                            <input type="hidden" name="year" value="{{ book.year }}">
+                            <input type="hidden" name="cover_url" value="{{ book.cover }}">
+                            <input type="hidden" name="status" value="Read">
+                            <button type="submit">👁</button>
+                            <span>Read</span>
+                        </form>
+
+                        <!-- Save as Liked Form -->
+                        <form action="/like_book" method="POST" class="button-item">
+                            <input type="hidden" name="title" value="{{ book.title }}">
+                            <input type="hidden" name="search_query" value="{{ request.args.get('q', '') }}">
+                            <input type="hidden" name="author" value="{{ book.author }}">
+                            <input type="hidden" name="year" value="{{ book.year }}">
+                            <input type="hidden" name="cover_url" value="{{ book.cover }}">
+                            <button type="submit">❤️</button>
+                            <span>Like</span>
+                        </form>
+
+                        <!-- Save to Readlist Form -->
+                        <form action="/unread_book" method="POST" class="button-item">
+                            <input type="hidden" name="title" value="{{ book.title }}">
+                            <input type="hidden" name="search_query" value="{{ request.args.get('q', '') }}">
+                            <input type="hidden" name="author" value="{{ book.author }}">
+                            <input type="hidden" name="year" value="{{ book.year }}">
+                            <input type="hidden" name="cover_url" value="{{ book.cover }}">
+                            <button type="submit">📚</button>
+                            <span>Readlist</span>
+                        </form>
+
+                        <!-- Clickable Expandable Review Form -->
+                        <details class="review-wrapper">
+                            <summary class="review-toggle">
+                              <span class="icon-btn">📝</span>
+                              <span>Review</span>
+                            </summary>
+                            <form action="/review_book" method="POST" class="review-popover">
+                                <input type="hidden" name="title" value="{{ book.title }}">
+                                <input type="hidden" name="search_query" value="{{ request.args.get('q', '') }}">
+                                <input type="hidden" name="author" value="{{ book.author }}">
+                                <input type="hidden" name="year" value="{{ book.year }}">
+                                <input type="hidden" name="cover_url" value="{{ book.cover }}">
+                                <input type="text" name="review_text" placeholder="Write review..." required autofocus>
+                                <button type="submit">Save Review</button>
+                            </form>
+                        </details>
+                            
+                        
+                        {% if book.id is defined and book.id %}
+                        <form action="{{ url_for('remove_book', book_id=book.id) }}" method="POST" class="button-item">
+                            <input type="hidden" name="search_query" value="{{ request.args.get('q', '') }}">
+                            <button type="submit" class="delete-btn" onclick="return confirm('Remove this book?');">🗑️</button>
+                            <span>Delete</span>
+
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <p style="color: #fff;">No books found!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+
+</body>
+</html>
