@@ -1,13 +1,16 @@
 import requests
 
 def fetch_books(query="subject:classics"):
-    url = f"https://openlibrary.org/search.json?q={query}&limit=12"
+    url = "https://openlibrary.org/search.json"
+    # Passing params lets requests URL-encode the query, so searches with
+    # spaces, '&', '#' etc. work correctly.
+    params = {"q": query, "limit": 12}
     headers = {
         "User-Agent": "MyBookApp/1.0 (contact@example.com)"
     }
-    
+
     try:
-        response = requests.get(url, headers=headers, timeout=5)
+        response = requests.get(url, params=params, headers=headers, timeout=5)
         if response.status_code != 200:
             return []
             
