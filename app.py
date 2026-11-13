@@ -138,9 +138,15 @@ def rate():
     author = request.form.get('author')
     year = request.form.get('year')
     cover = request.form.get('cover_url')
-    rating = int(request.form.get('rating', 0))
+    # Reject missing, non-numeric or out-of-range ratings instead of crashing
+    try:
+        rating = int(request.form.get('rating', ''))
+    except ValueError:
+        rating = 0
+    if not 1 <= rating <= 5:
+        flash('Rating must be between 1 and 5.')
+        return redirect(request.referrer or url_for('my_list'))
 
-    # Save specifically via save_rating
     save_rating(user_id, title, author, year, cover, rating)
     
     return redirect(request.referrer or url_for('my_list'))
@@ -150,14 +156,15 @@ def remove_book(book_id):
     if not session.get('logged_in'):
         return redirect(url_for('home'))
     
-    user_id = session.get('user_id')    
-    conn = sqlite3.connect("bookshelf.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM saved_books WHERE id = ? AND user_id = ?", (book_id, user_id))
-    conn.commit()
-    conn.close()
-    
+    remove_saved_book(session.get('user_id'), book_id)
     return redirect(request.referrer or url_for('my_list'))
+
+@app.route('/remove_readlist_book/<int:book_id>', methods=['POST'])
+def remove_from_readlist(book_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('home'))
+    remove_readlist_book(session.get('user_id'), book_id)
+    return redirect(url_for('my_readlist'))
 
 @app.route('/my-list')
 def my_list():
