@@ -136,10 +136,25 @@ def unread_books(user_id, title, author, year, cover_url):
         
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO readlist_books (user_id, title, author, year, cover_url)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (user_id, title, author, year, cover_url))
+    # Don't add the same book to a user's readlist twice
+    cursor.execute("SELECT 1 FROM readlist_books WHERE user_id = ? AND title = ?", (user_id, title))
+    if cursor.fetchone() is None:
+        cursor.execute('''
+            INSERT INTO readlist_books (user_id, title, author, year, cover_url)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user_id, title, author, year, cover_url))
+        conn.commit()
+    conn.close()
+
+def remove_saved_book(user_id, book_id):
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute("DELETE FROM saved_books WHERE id = ? AND user_id = ?", (book_id, user_id))
+    conn.commit()
+    conn.close()
+
+def remove_readlist_book(user_id, book_id):
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute("DELETE FROM readlist_books WHERE id = ? AND user_id = ?", (book_id, user_id))
     conn.commit()
     conn.close()
 
