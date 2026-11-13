@@ -4,6 +4,10 @@ from database import *
 import os
 
 app = Flask(__name__)
+# Read the secret key from the environment so sessions survive restarts and
+# work no matter how the app is started (python app.py, flask run, gunicorn).
+# The fallback is only for local development — never use it in production.
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 init_table()
 
@@ -192,5 +196,4 @@ def my_profile():
     return render_template('profile.html')
 
 if __name__ == "__main__":
-    app.secret_key = os.urandom(12)
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")
